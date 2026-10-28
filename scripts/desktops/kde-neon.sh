@@ -70,8 +70,13 @@ deb [signed-by=/etc/apt/trusted.gpg.d/neon-archive-keyring.gpg] http://archive.n
 deb-src [signed-by=/etc/apt/trusted.gpg.d/neon-archive-keyring.gpg] http://archive.neon.kde.org/user noble main
 EOF
 
-    mkdir -p /etc/apt/preferences.d
-    cat <<'EOF' > /etc/apt/preferences.d/99-neon
+    local arch
+    arch="$(dpkg --print-architecture)"
+
+    if [ "$arch" = "amd64" ]; then
+        echo "--> [KDE Neon] 检测到 AMD64 架构：使用官方 Neon Plasma 6 桌面套件..."
+        mkdir -p /etc/apt/preferences.d
+        cat <<'EOF' > /etc/apt/preferences.d/99-neon
 Package: *
 Pin: release o="user noble"
 Pin-Priority: 1001
@@ -80,41 +85,38 @@ Package: *
 Pin: origin "archive.neon.kde.org"
 Pin-Priority: 1001
 EOF
-
-    if [ -f /etc/apt/sources.list.d/ubuntu.sources ]; then
-        sed -i 's/^Types: deb$/Types: deb deb-src/' /etc/apt/sources.list.d/ubuntu.sources
-    elif [ -f /etc/apt/sources.list ]; then
-        sed -i 's/^deb \(.*\)$/deb \1\ndeb-src \1/' /etc/apt/sources.list
+        apt-get update
+        apt-get dist-upgrade -y --allow-downgrades --no-install-recommends
+        apt-get install -y --allow-downgrades --no-install-recommends \
+            neon-desktop \
+            dbus-x11 x11-xserver-utils breeze-icon-theme \
+            pipewire pipewire-alsa pipewire-pulse wireplumber upower \
+            mesa-utils pulseaudio-utils vulkan-tools dbus-user-session \
+            aha clinfo dmidecode libdisplay-info-bin wayland-utils xserver-xorg \
+            xdg-user-dirs libcanberra-pulse gstreamer1.0-plugins-base gstreamer1.0-plugins-good sound-theme-freedesktop \
+            polkit-kde-agent-1 libpam-systemd libpam-modules \
+            fonts-noto-cjk fonts-noto-color-emoji \
+            language-pack-kde-zh-hans language-pack-zh-hans qt6-translations-l10n \
+            dolphin konsole kate ark
+    else
+        echo "--> [KDE Neon] 检测到 ARM64 架构：KDE neon noble 仓库上游暂未为 arm64 编译 plasma-desktop 二进制"
+        echo "--> [KDE Neon] 配置 Neon 软件源并集成兼容 KDE Plasma 栈、Neon 视觉主题、图标、字体及硬件加速配置..."
+        mkdir -p /etc/apt/preferences.d
+        cat <<'EOF' > /etc/apt/preferences.d/99-neon
+Package: *
+Pin: origin "archive.neon.kde.org"
+Pin-Priority: 100
+EOF
+        apt-get update
+        apt-get install -y --allow-downgrades --no-install-recommends \
+            kde-plasma-desktop kubuntu-settings-desktop kubuntu-wallpapers breeze-icon-theme \
+            pipewire pipewire-alsa pipewire-pulse wireplumber powerdevil kscreen plasma-pa ark kwin-x11 kwin-wayland upower konsole \
+            dolphin kate kinfocenter mesa-utils pulseaudio-utils vulkan-tools dbus-user-session aha clinfo dmidecode libdisplay-info-bin wayland-utils xserver-xorg \
+            kfind plasma-systemmonitor filelight glmark2 systemsettings kde-config-screenlocker kio-extras xdg-user-dirs dolphin-plugins ffmpegthumbs kdegraphics-thumbnailers \
+            kimageformat-plugins plasma-browser-integration libcanberra-pulse gstreamer1.0-plugins-base gstreamer1.0-plugins-good sound-theme-freedesktop \
+            polkit-kde-agent-1 libpam-systemd libpam-modules libpam-kwallet5 language-pack-kde-zh-hans language-pack-zh-hans qt6-translations-l10n \
+            fonts-noto-cjk fonts-noto-color-emoji
     fi
-
-    echo "--> [KDE Neon] 更新索引并升级基础组件到 Neon Plasma 6..."
-    apt-get update
-    apt-get dist-upgrade -y --allow-downgrades --no-install-recommends
-
-    echo "--> [KDE Neon] 安装 KDE Neon Plasma 6 桌面套件..."
-    apt-get install -y --allow-downgrades --no-install-recommends \
-        neon-desktop \
-        dbus-x11 x11-xserver-utils breeze-icon-theme \
-        pipewire pipewire-alsa pipewire-pulse wireplumber upower \
-        mesa-utils pulseaudio-utils vulkan-tools dbus-user-session \
-        aha clinfo dmidecode libdisplay-info-bin wayland-utils xserver-xorg \
-        xdg-user-dirs libcanberra-pulse gstreamer1.0-plugins-base gstreamer1.0-plugins-good sound-theme-freedesktop \
-        polkit-kde-agent-1 libpam-systemd libpam-modules \
-        fonts-noto-cjk fonts-noto-color-emoji \
-        language-pack-kde-zh-hans language-pack-zh-hans qt6-translations-l10n \
-        dolphin konsole kate ark || {
-            echo "--> [KDE Neon] 尝试无额外 GUI 应用的核心安装..."
-            apt-get install -y --allow-downgrades --no-install-recommends \
-                neon-desktop \
-                dbus-x11 x11-xserver-utils breeze-icon-theme \
-                pipewire pipewire-alsa pipewire-pulse wireplumber upower \
-                mesa-utils pulseaudio-utils vulkan-tools dbus-user-session \
-                aha clinfo dmidecode libdisplay-info-bin wayland-utils xserver-xorg \
-                xdg-user-dirs libcanberra-pulse gstreamer1.0-plugins-base gstreamer1.0-plugins-good sound-theme-freedesktop \
-                polkit-kde-agent-1 libpam-systemd libpam-modules \
-                fonts-noto-cjk fonts-noto-color-emoji \
-                language-pack-kde-zh-hans language-pack-zh-hans qt6-translations-l10n
-        }
 }
 
 install_profile() {
