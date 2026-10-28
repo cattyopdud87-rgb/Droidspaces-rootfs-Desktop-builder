@@ -4,6 +4,7 @@ desktop_normalize() {
     case "${1:-}" in
         none) printf '%s\n' none ;;
         KDE|kde) printf '%s\n' kde ;;
+        'KDE Neon'|'KDE neon'|kde-neon|KDE-Neon) printf '%s\n' kde-neon ;;
         'KDE mobile'|kde-mobile) printf '%s\n' kde-mobile ;;
         GNOME|gnome) printf '%s\n' gnome ;;
         'Anland Next'|anland-next) printf '%s\n' anland-next ;;
@@ -19,6 +20,7 @@ desktop_label() {
     case "${1:-}" in
         none) printf '%s\n' none ;;
         kde) printf '%s\n' KDE ;;
+        kde-neon) printf '%s\n' 'KDE Neon' ;;
         kde-mobile) printf '%s\n' 'KDE mobile' ;;
         gnome) printf '%s\n' GNOME ;;
         anland-next) printf '%s\n' 'Anland Next' ;;
@@ -60,6 +62,12 @@ desktop_target_supported() {
     target_is_known "$target" || return 1
     case "$desktop" in
         none|kde) return 0 ;;
+        kde-neon)
+            case "$target" in
+                Ubuntu-24) return 0 ;;
+                *) return 1 ;;
+            esac
+            ;;
         kde-mobile)
             case "$target" in
                 Debian-13|Ubuntu-26|Fedora-43|Fedora-44|Arch) return 0 ;;
@@ -96,6 +104,12 @@ desktop_backend_supported() {
                 *) return 1 ;;
             esac
             ;;
+        kde-neon:x11|kde-neon:anland-wayland)
+            case "$target" in
+                Ubuntu-24) return 0 ;;
+                *) return 1 ;;
+            esac
+            ;;
         kde:anland-wayland|kde-mobile:anland-wayland)
             case "$target" in
                 Debian-13|Ubuntu-24|Ubuntu-26|Fedora-43|Fedora-44|Arch) return 0 ;;
@@ -122,6 +136,9 @@ desktop_wayland_targets_json() {
     case "${1:-}" in
         kde|kde-mobile|anland-next)
             printf '%s\n' '["Debian-13","Ubuntu-26","Fedora-43","Fedora-44","Arch"]'
+            ;;
+        kde-neon)
+            printf '%s\n' '["Ubuntu-24"]'
             ;;
         gnome|niri|hyprland|mango|denial)
             printf '%s\n' '["Debian-13","Ubuntu-26","Fedora-43","Fedora-44","Arch"]'

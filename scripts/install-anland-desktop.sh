@@ -6,7 +6,7 @@ desktop="$1"
 shift
 
 case "$desktop" in
-    kde|kde-mobile) installer="/usr/local/sbin/install-anland-kde" ;;
+    kde|kde-mobile|kde-neon) installer="/usr/local/sbin/install-anland-kde" ;;
     gnome) installer="/usr/local/sbin/install-anland-gnome" ;;
     anland-next) installer="/usr/local/sbin/install-anland-next" ;;
     niri) installer="/usr/local/sbin/install-anland-niri" ;;

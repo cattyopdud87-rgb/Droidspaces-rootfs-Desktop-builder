@@ -268,7 +268,7 @@ EOF
                "$config_dir/kded5rc" "$config_dir/kded6rc" "$autostart_dir/org.kde.discover.notifier.desktop"
 }
 
-if [[ "$desktop" == kde || "$desktop" == kde-mobile ]]; then
+if [[ "$desktop" == kde || "$desktop" == kde-mobile || "$desktop" == kde-neon ]]; then
     configure_kde_plasma_profile
 fi
 

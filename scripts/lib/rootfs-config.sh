@@ -6,7 +6,7 @@ write_rootfs_config() {
     local zh_tz_enabled="${7:-false}"
     local anland=0 x11=0 pulse=0 userns=0 gpu=0
 
-    case "$desktop" in none|kde|kde-mobile|gnome|anland-next|niri|hyprland|mango|denial) ;; *) return 1 ;; esac
+    case "$desktop" in none|kde|kde-mobile|kde-neon|gnome|anland-next|niri|hyprland|mango|denial) ;; *) return 1 ;; esac
     case "$backend" in
         anland-wayland) anland=1 ;;
         x11) x11=1 ;;
@@ -16,7 +16,7 @@ write_rootfs_config() {
     case "$docker_enabled:$gpu_enabled" in true:true|true:false|false:true|false:false) ;; *) return 1 ;; esac
     case "$zh_tz_enabled" in true|false) ;; *) return 1 ;; esac
     [[ "$backend" == x11 && "$audio" == socket ]] && pulse=1
-    [[ "$desktop" == kde || "$desktop" == kde-mobile ]] && userns=1
+    [[ "$desktop" == kde || "$desktop" == kde-mobile || "$desktop" == kde-neon ]] && userns=1
     [[ "$gpu_enabled" == true ]] && gpu=1
 
     {

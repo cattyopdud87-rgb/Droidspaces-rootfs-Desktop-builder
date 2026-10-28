@@ -31,6 +31,7 @@ on:
         options:
           - none
           - KDE
+          - KDE Neon
           - KDE mobile
           - GNOME
           - Anland Next

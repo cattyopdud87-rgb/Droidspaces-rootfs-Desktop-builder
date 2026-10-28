@@ -197,7 +197,7 @@ set_desktop_component() {
     DESKTOP_COMPONENT_LABEL=""
     DESKTOP_COMPONENT_MODE="choose"
     case "$DESKTOP_PROFILE" in
-        kde|kde-mobile)
+        kde|kde-mobile|kde-neon)
             DESKTOP_COMPONENT="kde"
             DESKTOP_COMPONENT_LABEL="Anland KDE (KWin/Xwayland)"
             DESKTOP_COMPONENT_MODE="direct"

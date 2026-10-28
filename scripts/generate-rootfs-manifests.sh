@@ -27,21 +27,22 @@ declare -A distro_name=(
   [Fedora-43]='Fedora 43' [Fedora-44]='Fedora 44' [Arch]='Arch Linux'
 )
 declare -A distro_id=(
-  [Debian-13]='Debian' [Ubuntu-26]='Ubuntu'
+  [Debian-13]='Debian' [Ubuntu-24]='Ubuntu' [Ubuntu-26]='Ubuntu'
   [Fedora-43]='Fedora' [Fedora-44]='Fedora' [Arch]='Arch'
 )
 declare -A desktop_name=(
-  [kde]='KDE Plasma' [kde-mobile]='KDE Plasma Mobile' [gnome]='GNOME'
+  [kde]='KDE Plasma' [kde-neon]='KDE Neon Plasma 6' [kde-mobile]='KDE Plasma Mobile' [gnome]='GNOME'
   [anland-next]='Anland Next' [niri]='Niri' [hyprland]='Hyprland'
   [mango]='Mango' [denial]='Denial'
 )
 declare -A desktop_label=(
-  [kde]='KDE' [kde-mobile]='KDE mobile' [gnome]='GNOME'
+  [kde]='KDE' [kde-neon]='KDE Neon' [kde-mobile]='KDE mobile' [gnome]='GNOME'
   [anland-next]='Anland Next' [niri]='Niri' [hyprland]='Hyprland'
   [mango]='Mango' [denial]='Denial'
 )
 declare -A distro_detail_zh=(
   [Debian-13]='基于 Debian 13 Trixie ARM64，预装常用容器工具、网络与 SSH 支持'
+  [Ubuntu-24]='基于 Ubuntu 24.04 Noble LTS ARM64，预装常用容器工具、网络与 SSH 支持'
   [Ubuntu-26]='基于 Ubuntu 26.04 ARM64，预装常用容器工具、网络与 SSH 支持'
   [Fedora-43]='基于 Fedora 43 ARM64，包含 DNF 管理工具、网络与 SSH 支持'
   [Fedora-44]='基于 Fedora 44 ARM64，包含 DNF 管理工具、网络与 SSH 支持'
@@ -49,6 +50,7 @@ declare -A distro_detail_zh=(
 )
 declare -A distro_detail_en=(
   [Debian-13]='Based on Debian 13 Trixie for ARM64, with common container utilities, networking, and SSH support'
+  [Ubuntu-24]='Based on Ubuntu 24.04 Noble LTS for ARM64, with common container utilities, networking, and SSH support'
   [Ubuntu-26]='Based on Ubuntu 26.04 for ARM64, with common container utilities, networking, and SSH support'
   [Fedora-43]='Based on Fedora 43 for ARM64, with DNF tools, networking, and SSH support'
   [Fedora-44]='Based on Fedora 44 for ARM64, with DNF tools, networking, and SSH support'
@@ -56,6 +58,7 @@ declare -A distro_detail_en=(
 )
 declare -A desktop_detail_zh=(
   [kde]='集成 Plasma 桌面、Anland 专用 KWin/Xwayland、Dolphin 文件管理器、Konsole 终端和系统设置'
+  [kde-neon]='基于 KDE neon Noble 官方源的 Plasma 6 桌面环境，包含 Magic Lamp、果冻窗口特效、硬件加速配置与性能调优'
   [kde-mobile]='集成面向触屏的 Plasma Mobile、Maliit 屏幕键盘、Angelfish 浏览器和 Anland Wayland 会话'
   [gnome]='集成 GNOME Shell、Mutter、设置中心、文件管理器、终端、密钥环和常用桌面应用'
   [anland-next]='提供 Anland Next 会话、rootless Xwayland 与 mini-wm，适合在轻量图形环境中运行桌面应用'
@@ -66,6 +69,7 @@ declare -A desktop_detail_zh=(
 )
 declare -A desktop_detail_en=(
   [kde]='Includes the Plasma desktop, Anland-patched KWin/Xwayland, Dolphin file manager, Konsole terminal, and system settings'
+  [kde-neon]='Official KDE neon Noble Plasma 6 desktop suite with Magic Lamp, Wobbly Windows, hardware acceleration, and performance tuning'
   [kde-mobile]='Includes touch-focused Plasma Mobile, the Maliit on-screen keyboard, Angelfish browser, and an Anland Wayland session'
   [gnome]='Includes GNOME Shell, Mutter, Settings, Files, Terminal, keyring integration, and common desktop applications'
   [anland-next]='Provides the Anland Next session, rootless Xwayland, and mini-wm for running desktop applications in a lightweight graphical environment'

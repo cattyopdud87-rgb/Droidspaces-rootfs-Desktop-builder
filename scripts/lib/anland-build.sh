@@ -6,7 +6,7 @@ anland_package_family() {
 
     [[ "$backend" == anland-wayland ]] || return 1
     case "$desktop" in
-        kde|kde-mobile) printf '%s\n' kde ;;
+        kde|kde-mobile|kde-neon) printf '%s\n' kde ;;
         gnome) printf '%s\n' gnome ;;
         # Release 是 anland-session-packages / anland-session-manifest，
         # 正好是 anland-${family}-packages / anland-${family}-manifest 的形状。
