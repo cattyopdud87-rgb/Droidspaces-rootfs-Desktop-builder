@@ -98,7 +98,7 @@ desktop_backend_supported() {
             ;;
         kde:anland-wayland|kde-mobile:anland-wayland)
             case "$target" in
-                Debian-13|Ubuntu-26|Fedora-43|Fedora-44|Arch) return 0 ;;
+                Debian-13|Ubuntu-24|Ubuntu-26|Fedora-43|Fedora-44|Arch) return 0 ;;
                 *) return 1 ;;
             esac
             ;;

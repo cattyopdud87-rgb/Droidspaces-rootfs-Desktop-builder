@@ -123,16 +123,159 @@ if [[ "$desktop" == anland-next ]]; then
     configure_anland_next_runtime
 fi
 
-if [[ "$desktop" == kde ]]; then
-    install -d -m 0755 "$rootfs/home/$username/.config"
-    cat > "$rootfs/home/$username/.config/kwinrc" <<'EOF'
+configure_kde_plasma_profile() {
+    local user_home="$rootfs/home/$username"
+    local config_dir="$user_home/.config"
+    local autostart_dir="$config_dir/autostart"
+
+    install -d -m 0755 "$config_dir" "$autostart_dir"
+
+    # 1. KWin compositor & aesthetics: Hardware acceleration, Magic Lamp, Wobbly Windows, Blur, Translucency
+    cat > "$config_dir/kwinrc" <<'EOF'
 [Compositing]
-Enabled=false
+AnimationSpeed=3
+Backend=OpenGL
+Enabled=true
+GLCore=true
+GLPreferBufferSwap=a
+HiddenPreviews=5
+MaxFPS=120
+RefreshRate=120
+WindowsBlockCompositing=false
+
+[Plugins]
+blurEnabled=true
+contrastEnabled=false
+fadedesktopEnabled=true
+kwin4_effect_translucencyEnabled=true
+magiclampEnabled=true
+overviewEnabled=true
+scaleEnabled=true
+slideEnabled=true
+slidingpopupsEnabled=true
+windowgeometryEnabled=true
+wobblywindowsEnabled=true
+
+[Effect-Blur]
+BlurStrength=4
+NoiseStrength=0
+
+[Effect-MagicLamp]
+AnimationDuration=220
+
+[Effect-WobblyWindows]
+AdvancedMode=false
+Drag=80
+Friction=0.82
+MoveFactor=15
+SpringFactor=0.08
+WobblyWindowsType=0
+
+[Effect-Translucency]
+ComboboxPopups=100
+Dialogs=100
+Inactive=92
+Menus=100
+MoveResize=85
+
+[Windows]
+FocusPolicy=ClickToFocus
+GeometryTip=false
+RollOverDesktops=true
+TitlebarDoubleClickCommand=Maximize
 EOF
+
+    # 2. Breeze window decoration: smooth drop shadows, clean borders and rounded corners
+    cat > "$config_dir/breezerc" <<'EOF'
+[Common]
+OutlineIntensity=OutlineMedium
+ShadowOffset=ShadowOffsetCenter
+ShadowSize=ShadowMedium
+ShadowStrength=60
+
+[Windeco]
+ButtonSize=ButtonNormal
+DrawBackgroundGradient=false
+DrawBorderOnMaximizedWindows=false
+DrawTitleBarSeparator=false
+EOF
+
+    # 3. System-wide aesthetics: Breeze Dark, fluid animation duration, sound events muted (prevents Android audio deadlock)
+    cat > "$config_dir/kdeglobals" <<'EOF'
+[KDE]
+AnimationDurationFactor=1
+ShowDeleteCommand=false
+widgetStyle=Breeze
+
+[Icons]
+Theme=breeze-dark
+
+[General]
+ColorScheme=BreezeDark
+
+[Sounds]
+Enable=false
+EOF
+
+    # 4. Plasma Shell theme: Breeze Dark with translucent panels and widgets
+    cat > "$config_dir/plasmarc" <<'EOF'
+[Theme]
+name=breeze-dark
+EOF
+
+    # 5. Resource optimization: Disable Baloo file indexer to eliminate background CPU, RAM and storage crawling
+    cat > "$config_dir/baloofilerc" <<'EOF'
+[Basic Settings]
+Indexing-Enabled=false
+EOF
+
+    # 6. Optimize KRunner (desktop search without Baloo indexer overhead)
+    cat > "$config_dir/krunnerrc" <<'EOF'
+[Plugins]
+baloosearchEnabled=false
+EOF
+
+    # 7. Unneeded KDED background daemon modules disabled (saves RAM and avoids wpad-detector / print errors)
+    cat > "$config_dir/kded5rc" <<'EOF'
+[Module-wpad-detector]
+autoload=false
+[Module-printmanager]
+autoload=false
+[Module-remotedirnotify]
+autoload=false
+EOF
+
+    cat > "$config_dir/kded6rc" <<'EOF'
+[Module-wpad-detector]
+autoload=false
+[Module-printmanager]
+autoload=false
+[Module-remotedirnotify]
+autoload=false
+EOF
+
+    # 8. Disable background Discover update notifier
+    cat > "$autostart_dir/org.kde.discover.notifier.desktop" <<'EOF'
+[Desktop Entry]
+Type=Application
+Name=Discover Notifier
+Exec=
+Hidden=true
+EOF
+
+    chmod 0644 "$config_dir/kwinrc" "$config_dir/breezerc" "$config_dir/kdeglobals" \
+               "$config_dir/plasmarc" "$config_dir/baloofilerc" "$config_dir/krunnerrc" \
+               "$config_dir/kded5rc" "$config_dir/kded6rc" "$autostart_dir/org.kde.discover.notifier.desktop"
+}
+
+if [[ "$desktop" == kde || "$desktop" == kde-mobile ]]; then
+    configure_kde_plasma_profile
 fi
 
-if [[ -z "$rootfs" ]]; then
-    chown -R "$username:$username" "/home/$username"
+if [[ -n "$rootfs" ]]; then
+    chown -R "$username:$username" "$rootfs/home/$username" 2>/dev/null || true
+else
+    chown -R "$username:$username" "/home/$username" 2>/dev/null || true
 fi
 
 if [[ "$desktop" == none ]]; then

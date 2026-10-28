@@ -7,7 +7,15 @@ configure_environment() {
     local backend="${1:-}"
     local environment_file="${ROOTFS_DIR:-}/etc/environment"
     local assignment key
-    local -a assignments=(XCURSOR_SIZE=48 XDG_SESSION_CLASS=user)
+    local -a assignments=(
+        XCURSOR_SIZE=48
+        XDG_SESSION_CLASS=user
+        MESA_LOADER_DRIVER_OVERRIDE=kgsl
+        GALLIUM_DRIVER=kgsl
+        FD_FORCE_KGSL=1
+        LIBGL_ALWAYS_SOFTWARE=0
+        KWIN_COMPOSE=O2ES
+    )
 
     case "$backend" in
         x11)
@@ -45,15 +53,15 @@ install_apt() {
     case "$ID:$VERSION_ID" in
         debian:13)
             apt-get install -y --no-install-recommends \
-                dbus-x11 x11-xserver-utils fonts-noto-cjk fonts-noto-color-emoji kde-plasma-desktop pipewire pipewire-alsa pipewire-pulse wireplumber powerdevil kscreen plasma-pa ark kwin-x11 upower konsole \
-                dolphin kate kinfocenter mesa-utils pulseaudio-utils vulkan-tools desktop-base dbus-user-session aha clinfo dmidecode libdisplay-info-bin wayland-utils xserver-xorg \
+                dbus-x11 x11-xserver-utils fonts-noto-cjk fonts-noto-color-emoji kde-plasma-desktop pipewire pipewire-alsa pipewire-pulse wireplumber powerdevil kscreen plasma-pa ark kwin-x11 kwin-wayland upower konsole \
+                dolphin kate kinfocenter mesa-utils pulseaudio-utils vulkan-tools desktop-base dbus-user-session aha clinfo dmidecode libdisplay-info-bin wayland-utils xserver-xorg breeze-icon-theme \
                 kfind plasma-systemmonitor filelight glmark2 vkmark systemsettings kde-config-screenlocker kio-extras xdg-user-dirs dolphin-plugins ffmpegthumbs kdegraphics-thumbnailers \
                 kimageformat6-plugins webext-plasma-browser-integration libcanberra-pulse gstreamer1.0-plugins-base gstreamer1.0-plugins-good sound-theme-freedesktop
             ;;
         ubuntu:24.04)
             apt-get install -y --no-install-recommends \
-                dbus-x11 x11-xserver-utils fonts-noto-cjk fonts-noto-color-emoji kde-plasma-desktop kubuntu-settings-desktop kubuntu-wallpapers \
-                pipewire pipewire-alsa pipewire-pulse wireplumber powerdevil kscreen plasma-pa ark kwin-x11 upower konsole \
+                dbus-x11 x11-xserver-utils fonts-noto-cjk fonts-noto-color-emoji kde-plasma-desktop kubuntu-settings-desktop kubuntu-wallpapers breeze-icon-theme \
+                pipewire pipewire-alsa pipewire-pulse wireplumber powerdevil kscreen plasma-pa ark kwin-x11 kwin-wayland upower konsole \
                 dolphin kate kinfocenter mesa-utils pulseaudio-utils vulkan-tools dbus-user-session aha clinfo dmidecode libdisplay-info-bin wayland-utils xserver-xorg \
                 kfind plasma-systemmonitor filelight glmark2 systemsettings kde-config-screenlocker kio-extras xdg-user-dirs dolphin-plugins ffmpegthumbs kdegraphics-thumbnailers \
                 kimageformat-plugins plasma-browser-integration libcanberra-pulse gstreamer1.0-plugins-base gstreamer1.0-plugins-good sound-theme-freedesktop \
@@ -61,8 +69,8 @@ install_apt() {
             ;;
         ubuntu:25.10|ubuntu:26.04)
             apt-get install -y --no-install-recommends \
-                dbus-x11 x11-xserver-utils fonts-noto-cjk fonts-noto-color-emoji kde-plasma-desktop kubuntu-settings-desktop kubuntu-wallpapers \
-                pipewire pipewire-alsa pipewire-pulse wireplumber powerdevil kscreen plasma-pa ark kwin-x11 upower konsole \
+                dbus-x11 x11-xserver-utils fonts-noto-cjk fonts-noto-color-emoji kde-plasma-desktop kubuntu-settings-desktop kubuntu-wallpapers breeze-icon-theme \
+                pipewire pipewire-alsa pipewire-pulse wireplumber powerdevil kscreen plasma-pa ark kwin-x11 kwin-wayland upower konsole \
                 dolphin kate kinfocenter mesa-utils pulseaudio-utils vulkan-tools dbus-user-session aha clinfo dmidecode libdisplay-info-bin wayland-utils xserver-xorg \
                 kfind plasma-systemmonitor filelight glmark2 vkmark systemsettings kde-config-screenlocker kio-extras xdg-user-dirs dolphin-plugins ffmpegthumbs kdegraphics-thumbnailers \
                 kimageformat6-plugins plasma-browser-integration libcanberra-pulse gstreamer1.0-plugins-base gstreamer1.0-plugins-good sound-theme-freedesktop \
