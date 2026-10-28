@@ -89,10 +89,10 @@ EOF
 
     echo "--> [KDE Neon] 更新索引并升级基础组件到 Neon Plasma 6..."
     apt-get update
-    apt-get dist-upgrade -y --no-install-recommends
+    apt-get dist-upgrade -y --allow-downgrades --no-install-recommends
 
     echo "--> [KDE Neon] 安装 KDE Neon Plasma 6 桌面套件..."
-    apt-get install -y --no-install-recommends \
+    apt-get install -y --allow-downgrades --no-install-recommends \
         neon-desktop \
         dbus-x11 x11-xserver-utils breeze-icon-theme \
         pipewire pipewire-alsa pipewire-pulse wireplumber upower \
@@ -104,7 +104,7 @@ EOF
         language-pack-kde-zh-hans language-pack-zh-hans qt6-translations-l10n \
         dolphin konsole kate ark || {
             echo "--> [KDE Neon] 尝试无额外 GUI 应用的核心安装..."
-            apt-get install -y --no-install-recommends \
+            apt-get install -y --allow-downgrades --no-install-recommends \
                 neon-desktop \
                 dbus-x11 x11-xserver-utils breeze-icon-theme \
                 pipewire pipewire-alsa pipewire-pulse wireplumber upower \
