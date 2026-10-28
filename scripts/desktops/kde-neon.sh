@@ -73,8 +73,12 @@ EOF
     mkdir -p /etc/apt/preferences.d
     cat <<'EOF' > /etc/apt/preferences.d/99-neon
 Package: *
-Pin: origin archive.neon.kde.org
-Pin-Priority: 900
+Pin: release o="user noble"
+Pin-Priority: 1001
+
+Package: *
+Pin: origin "archive.neon.kde.org"
+Pin-Priority: 1001
 EOF
 
     if [ -f /etc/apt/sources.list.d/ubuntu.sources ]; then
@@ -90,12 +94,27 @@ EOF
     echo "--> [KDE Neon] 安装 KDE Neon Plasma 6 桌面套件..."
     apt-get install -y --no-install-recommends \
         neon-desktop \
-        dbus-x11 x11-xserver-utils fonts-noto-cjk fonts-noto-color-emoji breeze-icon-theme \
-        pipewire pipewire-alsa pipewire-pulse wireplumber powerdevil kscreen plasma-pa ark kwin-wayland upower konsole \
-        dolphin kate kinfocenter mesa-utils pulseaudio-utils vulkan-tools dbus-user-session aha clinfo dmidecode libdisplay-info-bin wayland-utils xserver-xorg \
-        kfind plasma-systemmonitor filelight glmark2 systemsettings kde-config-screenlocker kio-extras xdg-user-dirs dolphin-plugins ffmpegthumbs kdegraphics-thumbnailers \
-        kimageformat-plugins plasma-browser-integration libcanberra-pulse gstreamer1.0-plugins-base gstreamer1.0-plugins-good sound-theme-freedesktop \
-        polkit-kde-agent-1 libpam-systemd libpam-modules language-pack-kde-zh-hans language-pack-zh-hans qt6-translations-l10n
+        dbus-x11 x11-xserver-utils breeze-icon-theme \
+        pipewire pipewire-alsa pipewire-pulse wireplumber upower \
+        mesa-utils pulseaudio-utils vulkan-tools dbus-user-session \
+        aha clinfo dmidecode libdisplay-info-bin wayland-utils xserver-xorg \
+        xdg-user-dirs libcanberra-pulse gstreamer1.0-plugins-base gstreamer1.0-plugins-good sound-theme-freedesktop \
+        polkit-kde-agent-1 libpam-systemd libpam-modules \
+        fonts-noto-cjk fonts-noto-color-emoji \
+        language-pack-kde-zh-hans language-pack-zh-hans qt6-translations-l10n \
+        dolphin konsole kate ark || {
+            echo "--> [KDE Neon] 尝试无额外 GUI 应用的核心安装..."
+            apt-get install -y --no-install-recommends \
+                neon-desktop \
+                dbus-x11 x11-xserver-utils breeze-icon-theme \
+                pipewire pipewire-alsa pipewire-pulse wireplumber upower \
+                mesa-utils pulseaudio-utils vulkan-tools dbus-user-session \
+                aha clinfo dmidecode libdisplay-info-bin wayland-utils xserver-xorg \
+                xdg-user-dirs libcanberra-pulse gstreamer1.0-plugins-base gstreamer1.0-plugins-good sound-theme-freedesktop \
+                polkit-kde-agent-1 libpam-systemd libpam-modules \
+                fonts-noto-cjk fonts-noto-color-emoji \
+                language-pack-kde-zh-hans language-pack-zh-hans qt6-translations-l10n
+        }
 }
 
 install_profile() {
