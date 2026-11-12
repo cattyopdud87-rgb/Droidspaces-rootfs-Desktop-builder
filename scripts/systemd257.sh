@@ -251,6 +251,15 @@ fetch_official_release_metadata() {
   api_url="${GITHUB_API_URL}/repos/${RELEASE_REPOSITORY}/releases/tags/${RELEASE_TAG}"
   if ! OFFICIAL_RELEASE_METADATA="$(curl --proto '=https' --tlsv1.2 -fsSL \
     --retry 5 --retry-all-errors --connect-timeout 30 "$api_url")"; then
+    if [[ "$RELEASE_REPOSITORY" != "Goldzxcbug/droidspaces-package" ]]; then
+      log "仓库 ${RELEASE_REPOSITORY} 未发布 ${RELEASE_TAG}，回退至 Goldzxcbug/droidspaces-package..."
+      RELEASE_REPOSITORY="Goldzxcbug/droidspaces-package"
+      api_url="${GITHUB_API_URL}/repos/${RELEASE_REPOSITORY}/releases/tags/${RELEASE_TAG}"
+      OFFICIAL_RELEASE_METADATA="$(curl --proto '=https' --tlsv1.2 -fsSL \
+        --retry 5 --retry-all-errors --connect-timeout 30 "$api_url")" || \
+        die "无法读取 GitHub Release 元数据：${RELEASE_REPOSITORY}@${RELEASE_TAG}"
+      return
+    fi
     die "无法读取 GitHub Release 元数据：${RELEASE_REPOSITORY}@${RELEASE_TAG}"
   fi
 }
