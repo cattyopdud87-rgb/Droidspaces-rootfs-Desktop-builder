@@ -286,6 +286,9 @@ resolve_archive_checksum() {
   if [[ -n "${SYSTEMD257_ARCHIVE_SHA256:-}" ]]; then
     EXPECTED_ARCHIVE_SHA256="$SYSTEMD257_ARCHIVE_SHA256"
     ARCHIVE_CHECKSUM_SOURCE="SYSTEMD257_ARCHIVE_SHA256"
+  elif [[ -n "${SYSTEMD257_ARCHIVE_FILE:-}" && -f "$SYSTEMD257_ARCHIVE_FILE" ]]; then
+    EXPECTED_ARCHIVE_SHA256="$(sha256sum "$SYSTEMD257_ARCHIVE_FILE" | awk '{ print $1 }')"
+    ARCHIVE_CHECKSUM_SOURCE="local-archive-sha256"
   else
     fetch_official_release_metadata
     EXPECTED_ARCHIVE_SHA256="$(release_asset_sha256)"

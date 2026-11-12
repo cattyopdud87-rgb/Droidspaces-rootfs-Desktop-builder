@@ -129,6 +129,14 @@ if [[ "$desktop" == kde ]]; then
 [Compositing]
 Enabled=false
 EOF
+    cat > "$rootfs/home/$username/.config/baloofilerc" <<'EOF'
+[Basic Settings]
+Indexing-Enabled=false
+EOF
+    cat > "$rootfs/home/$username/.config/kded6rc" <<'EOF'
+[Module-baloo]
+autoload=false
+EOF
 fi
 
 if [[ -z "$rootfs" ]]; then

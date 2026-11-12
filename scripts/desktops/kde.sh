@@ -147,11 +147,21 @@ EOF
 install_arch() {
     install_arch_portal_placeholder
 
+    # 精简组件：剔除移动容器不需要的重型硬件查询/显卡基准测试工具 (glmark2, vkmark, clinfo, aha, dmidecode)
+    # 节省镜像尺寸与内存
     pacman -S --noconfirm --needed \
         xorg-xrandr noto-fonts-cjk noto-fonts-emoji plasma-desktop pipewire pipewire-alsa pipewire-pulse wireplumber powerdevil kscreen plasma-pa ark kwin upower konsole \
-        dolphin kate kinfocenter mesa-utils libpulse vulkan-tools aha clinfo dmidecode wayland-utils xorg-server \
-        kfind plasma-systemmonitor filelight glmark2 vkmark systemsettings kscreenlocker kio-extras xdg-user-dirs dolphin-plugins ffmpegthumbs kdegraphics-thumbnailers \
+        dolphin kate kinfocenter mesa-utils libpulse vulkan-tools wayland-utils xorg-server \
+        kfind plasma-systemmonitor filelight systemsettings kscreenlocker kio-extras xdg-user-dirs dolphin-plugins ffmpegthumbs kdegraphics-thumbnailers \
         kimageformats plasma-browser-integration libcanberra gstreamer gst-plugins-base gst-plugins-good sound-theme-freedesktop
+
+    # 禁用 Baloo 索引服务，防止常驻后台扫描引发 5.4G RAM 手机的 swap 颠簸
+    mkdir -p "${ROOTFS_DIR:-}/etc/xdg"
+    cat > "${ROOTFS_DIR:-}/etc/xdg/baloofilerc" <<'EOF'
+[Basic Settings]
+Indexing-Enabled=false
+EOF
+    chmod 0644 "${ROOTFS_DIR:-}/etc/xdg/baloofilerc"
 }
 
 install_profile() {

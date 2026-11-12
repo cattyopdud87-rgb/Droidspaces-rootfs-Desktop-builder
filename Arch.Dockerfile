@@ -124,6 +124,15 @@ RUN echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && \
 # 为所有 Arch RootFS 安装 Droidspaces USB Manager
 RUN /usr/local/sbin/install-droidspaces-usb-manager --user "${USERNAME}"
 
+# 编译并安装 Droidspaces Linux 4.14 兼容性 Shim (拦截 pidfd_open，防止 GLib waitid EINVAL 僵尸进程泄漏)
+COPY scripts/compat/ /tmp/droidspaces-compat/
+RUN if [ -f /tmp/droidspaces-compat/libdroidspaces-compat.c ]; then \
+        pacman -S --noconfirm --needed gcc && \
+        bash /tmp/droidspaces-compat/install-compat.sh /usr/local/lib /etc/ld.so.preload && \
+        pacman -Rdd --noconfirm gcc && \
+        rm -rf /tmp/droidspaces-compat; \
+    fi
+
 # 为 droidspaces 的 su/su -l 入口建立完整的 systemd 用户会话。
 RUN for pam_file in /etc/pam.d/su /etc/pam.d/su-l; do \
         if ! grep -qE '^[[:space:]-]*session[[:space:]].*pam_systemd\.so' "$pam_file"; then \
@@ -229,6 +238,10 @@ getent group droidspaces-gpu >/dev/null || groupadd -g 786 -r droidspaces-gpu
 usermod -a -G aid_inet,aid_net_raw,input,video,tty,droidspaces-gpu root || true
 usermod -a -G aid_inet,aid_net_raw,input,video,tty,wheel,droidspaces-gpu ${USERNAME} || true
 
+# 同步 /etc/gshadow 与 /etc/shadow，避免 shadow.service (grpck) 报缺少条目失败
+grpconv 2>/dev/null || true
+pwconv 2>/dev/null || true
+
 # 确保 Arch 赋予 sudo 权限给 wheel 组
 sed -i 's/^# %wheel ALL=(ALL:ALL) ALL/%wheel ALL=(ALL:ALL) ALL/' /etc/sudoers
 
@@ -236,7 +249,7 @@ sed -i 's/^# %wheel ALL=(ALL:ALL) ALL/%wheel ALL=(ALL:ALL) ALL/' /etc/sudoers
 ln -sf /dev/null /etc/systemd/system/systemd-networkd-wait-online.service
 ln -sf /dev/null /etc/systemd/system/systemd-journald-audit.socket
 
-# 优化 Journald 日志配置
+# 优化 Journald 日志配置（降低移动设备内存和 tmpfs 占用）
 cat >> /etc/systemd/journald.conf << 'EOT'
 [Journal]
 ReadKMsg=no
@@ -247,9 +260,9 @@ EOT
 mkdir -p /etc/systemd/journald.conf.d
 cat > /etc/systemd/journald.conf.d/ds-logging.conf << 'EOT'
 [Journal]
-SystemMaxUse=200M
-RuntimeMaxUse=200M
-MaxRetentionSec=7day
+SystemMaxUse=48M
+RuntimeMaxUse=32M
+MaxRetentionSec=3day
 MaxLevelStore=info
 EOT
 
@@ -267,8 +280,10 @@ if [ "$ENABLE_yj_ARG" = "true" ]; then
         fi
     done
 else
-    for service in systemd-udevd.service systemd-resolved.service systemd-networkd.service NetworkManager.service; do
-        ln -sf /dev/null "/etc/systemd/system/$service"
+    # 当未开启硬件/网络识别时，同时屏蔽服务与套接字，防止套接字事件反复触发服务导致 service-start-limit-hit
+    for unit in systemd-udevd.service systemd-udevd-control.socket systemd-udevd-kernel.socket \
+                 systemd-resolved.service systemd-networkd.service systemd-networkd.socket NetworkManager.service; do
+        ln -sf /dev/null "/etc/systemd/system/$unit"
     done
 fi
 
@@ -297,7 +312,7 @@ for unit in systemd-udevd.service systemd-udev-trigger.service systemd-udev-sett
     printf "[Unit]\nConditionPathIsReadWrite=\n" > "/etc/systemd/system/${unit}.d/99-readonly-fix.conf"
 done
 
-# 限制特定的网络服务
+# 限制特定的网络服务与套接字（仅在 nat/gateway 模式下激活，避免 host 模式 netlink 轮询耗电）
 for unit in NetworkManager.service dhcpcd.service systemd-resolved.service systemd-networkd.service; do
     if [ -f "$GUEST_SYSTEMD_PATH/$unit" ] || [ -f "/etc/systemd/system/multi-user.target.wants/$unit" ]; then
         mkdir -p "/etc/systemd/system/${unit}.d"
@@ -320,6 +335,14 @@ ExecCondition=/bin/sh -c "grep -q 'enable_hw_access=1' /run/droidspaces/containe
 EOF
     fi
 done
+
+# 全局默认禁用 KDE Baloo 文件索引器，防止后台无休止扫描吃尽物理 RAM 并引发 kswapd 颠簸
+mkdir -p /etc/xdg
+cat > /etc/xdg/baloofilerc << 'EOF'
+[Basic Settings]
+Indexing-Enabled=false
+EOF
+chmod 0644 /etc/xdg/baloofilerc
 
 # 针对 Android 环境微调日志轮转
 if [ -f /etc/logrotate.conf ]; then

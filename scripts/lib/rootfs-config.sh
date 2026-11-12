@@ -19,18 +19,39 @@ write_rootfs_config() {
     [[ "$desktop" == kde || "$desktop" == kde-mobile ]] && userns=1
     [[ "$gpu_enabled" == true ]] && gpu=1
 
+    local -a binds=()
+    if [[ "$backend" == anland-wayland ]]; then
+        binds+=("/data/local/tmp/awl:/run/anland" "/data/local/tmp:/data/local/tmp")
+    fi
+    if [[ "$backend" == x11 || "$anland" == 1 ]]; then
+        binds+=("/data/local/tmp/.X11-unix:/tmp/.X11-unix")
+    fi
+
+    local bind_str=""
+    if ((${#binds[@]})); then
+        printf -v bind_str '%s,' "${binds[@]}"
+        bind_str="${bind_str%,}"
+    fi
+
     {
-        printf '%s\n' '# Droidspaces 推荐配置'
+        printf '%s\n' '# Droidspaces 容器运行配置'
         printf 'enable_anland=%s\nenable_termux_x11=%s\nenable_pulseaudio=%s\n' "$anland" "$x11" "$pulse"
         printf 'allow_userns=%s\nenable_gpu_mode=%s\n' "$userns" "$gpu"
+        printf 'force_cgroupv1=1\nprivileged=nomask,nocaps,shared\nallow_swap=0\npids_limit=8192\n'
+        printf 'cpuset=0-5\nswappiness=10\n'
+        printf 'selinux_permissive=1\n'
         if [[ "$zh_tz_enabled" == true ]]; then
-            printf '%s\n' 'dns_servers=114.114.114.114'
+            printf '%s\n' 'dns_servers=114.114.114.114,8.8.8.8'
+        else
+            printf '%s\n' 'dns_servers=1.1.1.1,8.8.8.8'
         fi
         if [[ "$docker_enabled" == true ]]; then
             printf '%s\n' 'net_mode=nat'
+        else
+            printf '%s\n' 'net_mode=host'
         fi
-        if [[ "$desktop" == anland-next ]]; then
-            printf '%s\n' 'bind_mounts=/data/local/tmp/awl:/run/anland'
+        if [[ -n "$bind_str" ]]; then
+            printf 'bind_mounts=%s\n' "$bind_str"
         fi
     } > "$output"
 }

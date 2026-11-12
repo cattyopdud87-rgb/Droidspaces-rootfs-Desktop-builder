@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$REPO_DIR/scripts/lib/desktop-config.sh"
 source "$REPO_DIR/scripts/lib/anland-build.sh"
@@ -63,8 +63,8 @@ case "$DESKTOP_AUTOSTART" in true|false) ;; *) echo "错误：-L 只支持 true 
 case "$ENABLE_systemd257" in
   true)
     case "$DESKTOP" in
-      kde)
-        echo "提示：systemd 257 已启用，普通 KDE 位于验证支持白名单中。"
+      kde|kde-mobile|gnome|anland-next|niri|hyprland|mango|denial)
+        echo "提示：systemd 257 已启用，桌面 $DESKTOP 位于支持列表中。"
         ;;
       none)
         DISPLAY_BACKEND="x11"
