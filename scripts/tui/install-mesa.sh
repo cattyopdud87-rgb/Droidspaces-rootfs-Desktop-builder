@@ -7,7 +7,9 @@ set -euo pipefail
 # 安装面向 Android 容器的 ARM64 Mesa 构建。
 # 同时安装 droidspaces-media-decode 发布的 MediaCodec VA-API 驱动。
 # 根据 /etc/os-release 选择 Mesa 归档格式和包管理器。
-readonly RELEASE_REPOSITORY="cattyopdud87-rgb/droidspaces-package"
+readonly DEFAULT_REPOSITORY="Goldzxcbug/droidspaces-package"
+readonly ARCH_DEFAULT_REPOSITORY="cattyopdud87-rgb/mesa-for-android-container"
+RELEASE_REPOSITORY="${MESA_RELEASE_REPOSITORY:-$DEFAULT_REPOSITORY}"
 readonly CNB_RELEASE_REPOSITORY="goldzxcbug/droidspaces-package"
 readonly DISTRIBUTION_TAG="mesa-for-android-container"
 readonly DISTRIBUTION_MANIFEST_NAME="mesa-distribution-manifest"
@@ -417,6 +419,9 @@ detect_target() {
             PACKAGE_MANAGER="pacman"
             ARCHIVE_KIND="tar"
             ASSET_PATTERN='^mesa-for-android-container_[^/]+_archlinux_arm64\.tar$'
+            if [[ -z "${MESA_RELEASE_REPOSITORY:-}" ]]; then
+                RELEASE_REPOSITORY="$ARCH_DEFAULT_REPOSITORY"
+            fi
             ;;
         debian)
             case "$version_id" in

@@ -198,9 +198,9 @@ EOF
     rm -rf /tmp/droidspaces-start
 EOF_RUN
 
-# 下载并安装 Mesa
+# 下载并安装 Mesa（Arch Linux 优先使用我们自己的 Mesa 驱动仓库）
 RUN if [ "$ENABLE_mesa_ARG" = "true" ]; then \
-        /usr/local/sbin/install-mesa --1; \
+        MESA_RELEASE_REPOSITORY="cattyopdud87-rgb/mesa-for-android-container" /usr/local/sbin/install-mesa --1; \
     else \
         echo "--> [跳过] 未开启 Mesa 驱动安装"; \
     fi
