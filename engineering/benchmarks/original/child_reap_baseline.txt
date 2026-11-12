@@ -1,0 +1,7 @@
+[test_child_reap] Spawning child process: /bin/true
+[test_child_reap] Child spawned with PID 15154. Registering child watch...
+
+(process:15153): GLib-WARNING **: 11:51:23.273: ../glib/glib/gmain.c:6355: waitid(pid:15154, pidfd=4) failed: Invalid argument (22). See documentation of g_child_watch_source_new() for possible causes.
+[test_child_reap] Child watch callback invoked for PID 15154 with raw status -1
+[test_child_reap] Main loop exited.
+[test_child_reap] FAILURE: Child status was -1 (expected 0). Zombie / reaping failure detected!

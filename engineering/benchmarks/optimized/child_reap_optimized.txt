@@ -1,0 +1,5 @@
+[test_child_reap] Spawning child process: /bin/true
+[test_child_reap] Child spawned with PID 15155. Registering child watch...
+[test_child_reap] Child watch callback invoked for PID 15155 with raw status 0
+[test_child_reap] Main loop exited.
+[test_child_reap] SUCCESS: Child process cleanly reaped with exit status 0.

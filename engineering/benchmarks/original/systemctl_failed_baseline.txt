@@ -1,0 +1,7 @@
+  UNIT                         LOAD   ACTIVE SUB    DESCRIPTION                                 
+● shadow.service               loaded failed failed Verify integrity of password and group files
+● systemd-networkd.socket      loaded failed failed Network Service Netlink Socket
+● systemd-udevd-control.socket loaded failed failed udev Control Socket
+● systemd-udevd-kernel.socket  loaded failed failed udev Kernel Socket
+
+4 loaded units listed.
