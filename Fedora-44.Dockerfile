@@ -16,7 +16,7 @@ ARG DISPLAY_BACKEND
 ARG ENABLE_8gen2_wayland_ARG
 ARG ENABLE_systemd257_ARG
 ARG USERNAME
-ARG ANLAND_RELEASE_REPOSITORY=cattyopdud87-rgb/anland
+ARG ANLAND_RELEASE_REPOSITORY=cattyopdud87-rgb/droidspaces-package
 ARG ANLAND_PACKAGE_REVISION=unknown
 ######################################################
 

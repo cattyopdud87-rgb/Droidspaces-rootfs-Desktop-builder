@@ -3,7 +3,7 @@ set -euo pipefail
 
 # The package archives are deliberately kept out of Git. Override the
 # repository when installing packages published by a fork.
-readonly DEFAULT_REPOSITORY="cattyopdud87-rgb/anland"
+readonly DEFAULT_REPOSITORY="cattyopdud87-rgb/droidspaces-package"
 readonly RELEASE_REPOSITORY="${ANLAND_MANGO_RELEASE_REPOSITORY:-${ANLAND_RELEASE_REPOSITORY:-$DEFAULT_REPOSITORY}}"
 RELEASE_TAG="${ANLAND_MANGO_RELEASE_TAG:-}"
 readonly ROLLING_RELEASE_TAG="anland-mango-packages"
