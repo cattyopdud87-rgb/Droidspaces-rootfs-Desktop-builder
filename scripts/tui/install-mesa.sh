@@ -3,11 +3,11 @@ set -euo pipefail
 
 # Mesa 源仓库：https://github.com/lfdevs/mesa-for-android-container
 # 媒体解码源仓库：https://github.com/Re-s/droidspaces-media-decode
-# 分发地址：https://github.com/Goldzxcbug/droidspaces-package/releases/tag/mesa-for-android-container
+# 分发地址：https://github.com/cattyopdud87-rgb/droidspaces-package/releases/tag/mesa-for-android-container
 # 安装面向 Android 容器的 ARM64 Mesa 构建。
 # 同时安装 droidspaces-media-decode 发布的 MediaCodec VA-API 驱动。
 # 根据 /etc/os-release 选择 Mesa 归档格式和包管理器。
-readonly RELEASE_REPOSITORY="Goldzxcbug/droidspaces-package"
+readonly RELEASE_REPOSITORY="cattyopdud87-rgb/droidspaces-package"
 readonly CNB_RELEASE_REPOSITORY="goldzxcbug/droidspaces-package"
 readonly DISTRIBUTION_TAG="mesa-for-android-container"
 readonly DISTRIBUTION_MANIFEST_NAME="mesa-distribution-manifest"

@@ -124,7 +124,7 @@ on:
         description: Wayland 软件包仓库（公开的 owner/repository）
         required: true
         type: string
-        default: Goldzxcbug/droidspaces-package
+        default: cattyopdud87-rgb/anland
 
 permissions:
   contents: write

@@ -7,7 +7,7 @@ export DEBIAN_FRONTEND=noninteractive
 
 readonly SYSTEMD257_TARGET_MAJOR=257
 readonly SYSTEMD257_STATE="/etc/droidspaces-systemd257"
-readonly DEFAULT_RELEASE_REPOSITORY="Goldzxcbug/droidspaces-package"
+readonly DEFAULT_RELEASE_REPOSITORY="cattyopdud87-rgb/droidspaces-package"
 # 这是滚动兼容 Release。每次安装都会从 GitHub Release API 读取目标资产的
 # 官方 SHA-256，再校验实际下载的归档，避免包更新后需要同步修改本脚本。
 readonly DEFAULT_RELEASE_TAG="systemd257-packages"

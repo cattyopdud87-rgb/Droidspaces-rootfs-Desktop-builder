@@ -35,7 +35,7 @@ permissions:
 
 env:
   RELEASE_TAG: droidspaces-rootfs-all-wayland
-  WAYLAND_PACKAGE_REPOSITORY: Goldzxcbug/droidspaces-package
+  WAYLAND_PACKAGE_REPOSITORY: cattyopdud87-rgb/anland
 
 jobs:
   prepare:
@@ -78,7 +78,7 @@ jobs:
       enable_kfgj: false
       enable_zip: true
       enable_docker: false
-      wayland_package_repository: Goldzxcbug/droidspaces-package
+      wayland_package_repository: cattyopdud87-rgb/anland
       build_id: ${{ needs.prepare.outputs.build_id }}
       asset_variant: zh
       publish_release: false
@@ -107,7 +107,7 @@ jobs:
       enable_kfgj: false
       enable_zip: true
       enable_docker: false
-      wayland_package_repository: Goldzxcbug/droidspaces-package
+      wayland_package_repository: cattyopdud87-rgb/anland
       build_id: ${{ needs.prepare.outputs.build_id }}
       asset_variant: en
       publish_release: false

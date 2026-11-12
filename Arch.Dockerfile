@@ -16,7 +16,7 @@ ARG ENABLE_docker_ARG
 ARG ENABLE_srf_ARG
 ARG ENABLE_systemd257_ARG
 ARG USERNAME
-ARG ANLAND_RELEASE_REPOSITORY=Goldzxcbug/droidspaces-package
+ARG ANLAND_RELEASE_REPOSITORY=cattyopdud87-rgb/anland
 ARG ANLAND_PACKAGE_REVISION=unknown
 ######################################################
 

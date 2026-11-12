@@ -41,7 +41,7 @@ while getopts "i:v:K:L:B:P:a:b:c:d:e:f:g:h:n:S:t:u:A:" opt; do
 done
 
 : "${USERNAME:=Gold}"
-: "${ANLAND_RELEASE_REPOSITORY:=Goldzxcbug/droidspaces-package}"
+: "${ANLAND_RELEASE_REPOSITORY:=cattyopdud87-rgb/anland}"
 : "${ANLAND_PACKAGE_REVISION:=}"
 
 if ! DESKTOP="$(desktop_normalize "${DESKTOP_INPUT:-}")"; then

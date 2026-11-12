@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-readonly DEFAULT_REPOSITORY="Goldzxcbug/droidspaces-package"
+readonly DEFAULT_REPOSITORY="cattyopdud87-rgb/droidspaces-package"
 readonly RELEASE_REPOSITORY="${WINEFONTS_RELEASE_REPOSITORY:-$DEFAULT_REPOSITORY}"
 readonly RELEASE_TAG="${WINEFONTS_RELEASE_TAG:-winefonts}"
 readonly MANIFEST_NAME="winefonts-manifest"

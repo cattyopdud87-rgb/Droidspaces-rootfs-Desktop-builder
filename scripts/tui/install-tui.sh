@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-readonly RELEASE_REPOSITORY="${DROIDSPACES_TUI_REPOSITORY:-Goldzxcbug/droidspaces-package}"
+readonly RELEASE_REPOSITORY="${DROIDSPACES_TUI_REPOSITORY:-cattyopdud87-rgb/droidspaces-package}"
 readonly RELEASE_TAG="Gold-bug-tui"
 readonly MANIFEST_NAME="Gold-bug-tui-manifest"
 readonly GITHUB_API_URL="${DROIDSPACES_TUI_API_URL:-https://api.github.com}"
@@ -53,7 +53,7 @@ usage() {
   -h, --help                     显示帮助
 
 固定 Release：
-  https://github.com/Goldzxcbug/droidspaces-package/releases/tag/Gold-bug-tui
+  https://github.com/cattyopdud87-rgb/droidspaces-package/releases/tag/Gold-bug-tui
 EOF
 }
 

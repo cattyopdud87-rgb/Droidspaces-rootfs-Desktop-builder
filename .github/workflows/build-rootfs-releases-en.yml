@@ -124,7 +124,7 @@ on:
         description: Wayland package repository (public owner/repository)
         required: true
         type: string
-        default: Goldzxcbug/droidspaces-package
+        default: cattyopdud87-rgb/anland
 
 permissions:
   contents: write

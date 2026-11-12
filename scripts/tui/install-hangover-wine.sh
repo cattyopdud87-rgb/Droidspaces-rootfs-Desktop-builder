@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-readonly DEFAULT_REPOSITORY="Goldzxcbug/droidspaces-package"
+readonly DEFAULT_REPOSITORY="cattyopdud87-rgb/droidspaces-package"
 readonly RELEASE_REPOSITORY="${HANGOVER_WINE_RELEASE_REPOSITORY:-$DEFAULT_REPOSITORY}"
 readonly RELEASE_TAG="${HANGOVER_WINE_RELEASE_TAG:-hangover-wine-packages}"
 readonly MANIFEST_NAME="hangover-wine-manifest"

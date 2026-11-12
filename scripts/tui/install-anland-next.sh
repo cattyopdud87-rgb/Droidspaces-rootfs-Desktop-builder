@@ -4,7 +4,7 @@ set -euo pipefail
 # Install the Anland Next session package published by build-anland-packages.yml.
 # The package itself remains owned by apt, dnf, or pacman; this script only
 # selects, verifies, and installs the native package for the current system.
-readonly DEFAULT_REPOSITORY="Goldzxcbug/droidspaces-package"
+readonly DEFAULT_REPOSITORY="cattyopdud87-rgb/anland"
 readonly RELEASE_REPOSITORY="${ANLAND_NEXT_RELEASE_REPOSITORY:-$DEFAULT_REPOSITORY}"
 RELEASE_TAG="${ANLAND_NEXT_RELEASE_TAG:-}"
 readonly ROLLING_RELEASE_TAG="anland-session-packages"
