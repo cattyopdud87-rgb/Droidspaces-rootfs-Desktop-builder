@@ -127,13 +127,19 @@ RUN /usr/local/sbin/install-droidspaces-usb-manager --user "${USERNAME}"
 # 编译 Droidspaces Linux 4.14 兼容性 Shim (老内核按需手动启用，现代化内核默认不加入 preload)
 COPY scripts/compat/ /tmp/droidspaces-compat/
 RUN if [ -f /tmp/droidspaces-compat/libdroidspaces-compat.c ]; then \
-        pacman -S --noconfirm --needed gcc && \
+        INSTALLED_TEMP_GCC=0; \
+        if ! command -v gcc >/dev/null 2>&1; then \
+            pacman -S --noconfirm --needed gcc && \
+            INSTALLED_TEMP_GCC=1; \
+        fi && \
         mkdir -p /usr/local/lib && \
         gcc -O2 -Wall -Wextra -fPIC /tmp/droidspaces-compat/libdroidspaces-compat.c -shared -ldl -Wl,-s -o /usr/local/lib/libdroidspaces-compat.so && \
         chmod 0755 /usr/local/lib/libdroidspaces-compat.so && \
         : > /etc/ld.so.preload && \
         chmod 0644 /etc/ld.so.preload && \
-        pacman -Rdd --noconfirm gcc && \
+        if [ "$INSTALLED_TEMP_GCC" = "1" ] && [ "$ENABLE_kfgj_ARG" != "true" ]; then \
+            pacman -Rs --noconfirm gcc 2>/dev/null || true; \
+        fi && \
         rm -rf /tmp/droidspaces-compat; \
     fi
 
@@ -146,16 +152,14 @@ RUN for pam_file in /etc/pam.d/su /etc/pam.d/su-l; do \
     grep -qE '^[[:space:]]*session[[:space:]].*pam_env\.so' /etc/pam.d/su-l || \
         echo 'session        required        pam_env.so' >> /etc/pam.d/su-l
 
-# 初始化环境变量文件；桌面专属变量由对应 profile 管理。
-RUN : > /etc/environment
-# 音频选择
-RUN if [ "$PulseAudio" = "socket" ]; then \
+# 初始化与配置环境变量
+RUN : > /etc/environment && \
+    if [ "$PulseAudio" = "socket" ]; then \
         echo "PULSE_SERVER=unix:/tmp/.pulse-socket" >> /etc/environment; \
     elif [ "$PulseAudio" = "tcp" ]; then \
         echo "PULSE_SERVER=tcp:127.0.0.1:4713" >> /etc/environment; \
-    fi
-
-RUN if [ "$ENABLE_mesa_ARG" = "true" ] && [ "$DISPLAY_BACKEND" = "anland-wayland" ]; then \
+    fi && \
+    if [ "$ENABLE_mesa_ARG" = "true" ] && [ "$DISPLAY_BACKEND" = "anland-wayland" ]; then \
         echo 'MESA_LOADER_DRIVER_OVERRIDE=kgsl' >> /etc/environment; \
         echo 'GALLIUM_DRIVER=kgsl' >> /etc/environment; \
         echo 'FD_FORCE_KGSL=1' >> /etc/environment; \
@@ -165,9 +169,8 @@ RUN if [ "$ENABLE_mesa_ARG" = "true" ] && [ "$DISPLAY_BACKEND" = "anland-wayland
         echo 'MESA_DISK_CACHE_SINGLE_FILE=1' >> /etc/environment; \
         echo 'QT_NO_PORTAL=1' >> /etc/environment; \
         echo 'GTK_USE_PORTAL=0' >> /etc/environment; \
-    fi
-
-RUN if [ "$ENABLE_8gen2_wayland_ARG" = "true" ]; then \
+    fi && \
+    if [ "$ENABLE_8gen2_wayland_ARG" = "true" ]; then \
         echo 'FD_DEV_FEATURES=enable_tp_ubwc_flag_hint=1' >> /etc/environment; \
     fi
 
@@ -403,18 +406,12 @@ EOF_RUN
 COPY scripts/binfmt/qemu-binfmt-register.sh /usr/local/bin/
 COPY scripts/binfmt/qemu-binfmt-register.service /etc/systemd/system/
 
-RUN if [ "$ENABLE_binfmt_ARG" = "false" ]; then \
-        rm -rf /usr/local/bin/qemu-binfmt-register.sh && \
-        rm -rf /etc/systemd/system/qemu-binfmt-register.service ; \
-    fi
-
 RUN if [ "$ENABLE_binfmt_ARG" = "true" ]; then \
         chmod +x /usr/local/bin/qemu-binfmt-register.sh && \
         chmod 644 /etc/systemd/system/qemu-binfmt-register.service && \
         mkdir -p /etc/systemd/system/multi-user.target.wants && \
         ln -sf /etc/systemd/system/qemu-binfmt-register.service /etc/systemd/system/multi-user.target.wants/qemu-binfmt-register.service && \
-        pacman -S --noconfirm --needed qemu-user qemu-user-binfmt && \
-        rm -rf /var/cache/pacman/pkg/* /var/lib/pacman/sync/* ; \
+        pacman -S --noconfirm --needed qemu-user qemu-user-binfmt; \
     else \
         rm -f /usr/local/bin/qemu-binfmt-register.sh /etc/systemd/system/qemu-binfmt-register.service; \
     fi
