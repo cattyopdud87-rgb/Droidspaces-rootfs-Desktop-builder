@@ -124,11 +124,15 @@ RUN echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && \
 # 为所有 Arch RootFS 安装 Droidspaces USB Manager
 RUN /usr/local/sbin/install-droidspaces-usb-manager --user "${USERNAME}"
 
-# 编译并安装 Droidspaces Linux 4.14 兼容性 Shim (拦截 pidfd_open，防止 GLib waitid EINVAL 僵尸进程泄漏)
+# 编译 Droidspaces Linux 4.14 兼容性 Shim (老内核按需手动启用，现代化内核默认不加入 preload)
 COPY scripts/compat/ /tmp/droidspaces-compat/
 RUN if [ -f /tmp/droidspaces-compat/libdroidspaces-compat.c ]; then \
         pacman -S --noconfirm --needed gcc && \
-        bash /tmp/droidspaces-compat/install-compat.sh /usr/local/lib /etc/ld.so.preload && \
+        mkdir -p /usr/local/lib && \
+        gcc -O2 -Wall -Wextra -fPIC /tmp/droidspaces-compat/libdroidspaces-compat.c -shared -ldl -Wl,-s -o /usr/local/lib/libdroidspaces-compat.so && \
+        chmod 0755 /usr/local/lib/libdroidspaces-compat.so && \
+        : > /etc/ld.so.preload && \
+        chmod 0644 /etc/ld.so.preload && \
         pacman -Rdd --noconfirm gcc && \
         rm -rf /tmp/droidspaces-compat; \
     fi
@@ -155,6 +159,12 @@ RUN if [ "$ENABLE_mesa_ARG" = "true" ] && [ "$DISPLAY_BACKEND" = "anland-wayland
         echo 'MESA_LOADER_DRIVER_OVERRIDE=kgsl' >> /etc/environment; \
         echo 'GALLIUM_DRIVER=kgsl' >> /etc/environment; \
         echo 'FD_FORCE_KGSL=1' >> /etc/environment; \
+        echo 'FD_MESA_DEBUG=gmem' >> /etc/environment; \
+        echo 'KWIN_COMPOSE=O2ES' >> /etc/environment; \
+        echo 'MESA_SHADER_CACHE_MAX_SIZE=32M' >> /etc/environment; \
+        echo 'MESA_DISK_CACHE_SINGLE_FILE=1' >> /etc/environment; \
+        echo 'QT_NO_PORTAL=1' >> /etc/environment; \
+        echo 'GTK_USE_PORTAL=0' >> /etc/environment; \
     fi
 
 RUN if [ "$ENABLE_8gen2_wayland_ARG" = "true" ]; then \
@@ -307,10 +317,44 @@ ExecStart=-/usr/bin/udevadm trigger --subsystem-match=usb --subsystem-match=bloc
 EOF
 
 # 针对只读文件系统路径覆盖
-for unit in systemd-udevd.service systemd-udev-trigger.service systemd-udev-settle.service systemd-udevd-kernel.socket systemd-udevd-control.socket; do
+for unit in systemd-udevd.service systemd-udev-trigger.service systemd-udev-settle.service; do
     mkdir -p "/etc/systemd/system/${unit}.d"
     printf "[Unit]\nConditionPathIsReadWrite=\n" > "/etc/systemd/system/${unit}.d/99-readonly-fix.conf"
 done
+
+# 防止 systemd-sysctl 写入 4194304 触发 Android Bionic pid_max 校验错误 (EINVAL)
+mkdir -p /etc/sysctl.d
+cat > /etc/sysctl.d/50-pid-max.conf << 'EOF'
+# Droidspaces / Bionic 兼容限制：防止 32 位 HAL 发生 pthread 互斥锁 TID 溢出
+kernel.pid_max = 65535
+EOF
+chmod 0644 /etc/sysctl.d/50-pid-max.conf
+
+# 屏蔽在移动容器中失效或产生高频轮询的后台服务与套接字，消除 restart limit 死循环与日志污染
+systemctl mask systemd-udevd-control.socket systemd-udevd-kernel.socket systemd-networkd.socket udisks2.service systemd-modules-load.service
+
+# 配置 PipeWire 低延迟与非特权容器静音 RTKit 轮询
+mkdir -p /etc/pipewire/pipewire.conf.d
+cat > /etc/pipewire/pipewire.conf.d/10-no-rtkit.conf << 'EOF'
+context.modules = [
+    { name = libpipewire-module-rt
+        args = {
+            nice.level    = 0
+            rt.prio       = 0
+            rtkit.enabled = false
+        }
+        flags = [ ifexists nofail ]
+    }
+]
+EOF
+cat > /etc/pipewire/pipewire.conf.d/10-low-latency.conf << 'EOF'
+context.properties = {
+    default.clock.quantum     = 512
+    default.clock.min-quantum = 128
+    default.clock.max-quantum = 1024
+}
+EOF
+chmod 0644 /etc/pipewire/pipewire.conf.d/*.conf
 
 # 限制特定的网络服务与套接字（仅在 nat/gateway 模式下激活，避免 host 模式 netlink 轮询耗电）
 for unit in NetworkManager.service dhcpcd.service systemd-resolved.service systemd-networkd.service; do

@@ -18,6 +18,11 @@ on:
           - Arch
           - all
           - all-wayland
+      build_id:
+        description: Explicit build identifier / release tag
+        required: false
+        type: string
+        default: ""
       custom_username:
         description: Custom username
         required: false
@@ -135,6 +140,7 @@ jobs:
     uses: ./.github/workflows/build-rootfs-core.yml
     with:
       ui_language: en
+      build_id: ${{ inputs.build_id }}
       build_target: ${{ inputs.build_target }}
       custom_username: ${{ inputs.custom_username }}
       desktop: ${{ inputs.desktop }}

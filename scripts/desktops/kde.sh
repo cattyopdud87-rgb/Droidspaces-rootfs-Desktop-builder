@@ -21,6 +21,9 @@ configure_environment() {
                 ANLAND_SOCKET=/run/display.sock
                 ANLAND_DRM_DEVICE=/dev/dri/renderD128
                 ANLAND_SKIP_IMPLICIT_SYNC_WAIT=1
+                KWIN_COMPOSE=O2ES
+                QT_NO_PORTAL=1
+                GTK_USE_PORTAL=0
             )
             case "$ID" in
                 arch|archarm|archlinux)
@@ -162,6 +165,18 @@ install_arch() {
 Indexing-Enabled=false
 EOF
     chmod 0644 "${ROOTFS_DIR:-}/etc/xdg/baloofilerc"
+
+    # 彻底禁用 KSplash 启动画面：容器在 Anland Wayland 下等待 DRM 帧就绪导致 100 秒超时挂起
+    cat > "${ROOTFS_DIR:-}/etc/xdg/ksplashrc" <<'EOF'
+[KSplash]
+Engine=none
+Theme=None
+EOF
+    chmod 0644 "${ROOTFS_DIR:-}/etc/xdg/ksplashrc"
+
+    # 屏蔽 Powerdevil 电源管理守护进程：移动容器无 ACPI/DDC/i2c-dev 控制权，节省驻留内存
+    mkdir -p "${ROOTFS_DIR:-}/etc/systemd/user"
+    ln -sf /dev/null "${ROOTFS_DIR:-}/etc/systemd/user/plasma-powerdevil.service"
 }
 
 install_profile() {

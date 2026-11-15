@@ -18,6 +18,11 @@ on:
           - Arch
           - all
           - all-wayland
+      build_id:
+        description: 构建标识符 / Release 标签
+        required: false
+        type: string
+        default: ""
       custom_username:
         description: 自定义用户名
         required: false
@@ -135,6 +140,7 @@ jobs:
     uses: ./.github/workflows/build-rootfs-core.yml
     with:
       ui_language: zh
+      build_id: ${{ inputs.build_id }}
       build_target: ${{ inputs.build_target }}
       custom_username: ${{ inputs.custom_username }}
       desktop: ${{ inputs.desktop }}
