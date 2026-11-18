@@ -336,7 +336,7 @@ chmod 0644 /etc/sysctl.d/50-pid-max.conf
 # 屏蔽在移动容器中失效或产生高频轮询的后台服务与套接字，消除 restart limit 死循环与日志污染
 systemctl mask systemd-udevd-control.socket systemd-udevd-kernel.socket systemd-networkd.socket udisks2.service systemd-modules-load.service \
                systemd-tmpfiles-setup-dev-early.service systemd-tmpfiles-setup-dev.service systemd-udev-load-credentials.service \
-               systemd-userdbd.service systemd-userdbd.socket systemd-localed.service modprobe@loop.service modprobe@configfs.service modprobe@drm.service modprobe@fuse.service \
+               systemd-userdbd.service systemd-userdbd.socket systemd-localed.service systemd-resolved.service modprobe@loop.service modprobe@configfs.service modprobe@drm.service modprobe@fuse.service \
                sys-kernel-tracing.mount sys-kernel-debug.mount
 
 # Headless loop prevention: KDE user service drop-in guards
