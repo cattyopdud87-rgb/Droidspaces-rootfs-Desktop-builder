@@ -334,7 +334,24 @@ EOF
 chmod 0644 /etc/sysctl.d/50-pid-max.conf
 
 # 屏蔽在移动容器中失效或产生高频轮询的后台服务与套接字，消除 restart limit 死循环与日志污染
-systemctl mask systemd-udevd-control.socket systemd-udevd-kernel.socket systemd-networkd.socket udisks2.service systemd-modules-load.service
+systemctl mask systemd-udevd-control.socket systemd-udevd-kernel.socket systemd-networkd.socket udisks2.service systemd-modules-load.service \
+               systemd-tmpfiles-setup-dev-early.service systemd-tmpfiles-setup-dev.service systemd-udev-load-credentials.service \
+               systemd-userdbd.service systemd-userdbd.socket modprobe@loop.service modprobe@configfs.service modprobe@drm.service modprobe@fuse.service \
+               sys-kernel-tracing.mount sys-kernel-debug.mount
+
+# Headless loop prevention: KDE user service drop-in guards
+for svc in plasma-polkit-agent.service plasma-kded6.service plasma-plasmashell.service plasma-powerdevil.service plasma-xdg-desktop-portal-kde.service; do
+    mkdir -p "/etc/systemd/user/${svc}.d"
+    cat << 'EOF_DROPIN' > "/etc/systemd/user/${svc}.d/override.conf"
+[Unit]
+ConditionPathExists=/run/display.sock
+
+[Service]
+Restart=no
+TimeoutStartSec=15sec
+TimeoutStopSec=5sec
+EOF_DROPIN
+done
 
 # 配置 PipeWire 低延迟与非特权容器静音 RTKit 轮询
 mkdir -p /etc/pipewire/pipewire.conf.d

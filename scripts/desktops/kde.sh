@@ -177,6 +177,20 @@ EOF
     # 屏蔽 Powerdevil 电源管理守护进程：移动容器无 ACPI/DDC/i2c-dev 控制权，节省驻留内存
     mkdir -p "${ROOTFS_DIR:-}/etc/systemd/user"
     ln -sf /dev/null "${ROOTFS_DIR:-}/etc/systemd/user/plasma-powerdevil.service"
+
+    # Headless loop prevention drop-ins for Droidspaces / Anland
+    for svc in plasma-polkit-agent.service plasma-kded6.service plasma-plasmashell.service plasma-powerdevil.service plasma-xdg-desktop-portal-kde.service; do
+        mkdir -p "${ROOTFS_DIR:-}/etc/systemd/user/${svc}.d"
+        cat << 'EOF_USER_DROPIN' > "${ROOTFS_DIR:-}/etc/systemd/user/${svc}.d/override.conf"
+[Unit]
+ConditionPathExists=/run/display.sock
+
+[Service]
+Restart=no
+TimeoutStartSec=15sec
+TimeoutStopSec=5sec
+EOF_USER_DROPIN
+    done
 }
 
 install_profile() {
